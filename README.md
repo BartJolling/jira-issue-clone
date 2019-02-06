@@ -14,5 +14,5 @@ Adds a "Clone"button to the "browse" screen of a JIRA issue, allowing to clone i
 - Review and adapt the code to properly deal with your custom field configuration
 
 ## Usage/Known Issues
-The clone button only gets added to the /browse/ page, when the page is loaded or refreshed. If you open an issue and don't see the button, press the <F5> function key to refresh.
-Cloning an issue can take a few seconds. Once the cloning operation has been succesfull, you will be redirected to the newly cloned issue.
+- The clone button only gets added to the /browse/ page, when the page is loaded or refreshed. 
+- Cloning an issue can take a few seconds. During that time, a spinner will be displayed next to the clone button. Once the cloning operation has been successful, you will be redirected to the newly cloned issue.
