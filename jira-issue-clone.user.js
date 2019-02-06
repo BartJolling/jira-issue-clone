@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       JIRA Issue - Clone
 // @namespace  http://bartjolling.github.io
-// @version    2.0.1
+// @version    2.0.2
 // @include    https://jira.*/*
 // @require    https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
 // @grant      none
@@ -14,8 +14,6 @@
 scriptToInject = function ($) {
 	var BROWSE_URL = window.location.protocol + '//' + window.location.hostname + '/browse/';
 	var API_URL = window.location.protocol + '//' + window.location.hostname + '/rest/api/latest/issue/';
-
-	console.log(API_URL);
 
 	// User-Agent must be blank to avoid JIRA issue with cross origin checks for Firefox.
 	$.ajaxSetup({
@@ -91,7 +89,6 @@ scriptToInject = function ($) {
 	function getCurrentIssueFields(issueId) {
 		try {
 			var query = API_URL + issueId;
-			console.log('[jira-issue-clone][getCurrentIssueFields] ' + query);
 			return $.getJSON(query);
 		}
 		catch (err) {
@@ -107,7 +104,6 @@ scriptToInject = function ($) {
 	function getIssueTypeFields(projectId, issueTypeId) {
 		try {
 			var query = API_URL + "createmeta?projectIds=" + projectId + "&issuetypeIds=" + issueTypeId + "&expand=projects.issuetypes.fields";
-			console.log('[jira-issue-clone][getIssueTypeFields] ' + query);
 			return $.getJSON(query);
 		}
 		catch (err) {
@@ -152,8 +148,6 @@ scriptToInject = function ($) {
 			}
 
 			data = JSON.stringify(newIssue);
-
-			console.log(API_URL);
 
 			$.ajax({
 				url: API_URL,
