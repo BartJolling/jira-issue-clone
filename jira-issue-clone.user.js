@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name       Jira - Copy Paste into new ticket
 // @namespace  http://bartjolling.github.io
-// @version    1
-// @include    https://jira.*.com/browse/*
+// @version    1.0.1
+// @include    *jira*/browse/*-*
 // @require    http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
 // @grant      none
 // @run-at     document-end
