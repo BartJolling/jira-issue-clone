@@ -10,7 +10,6 @@ Adds a "Clone"button to the "browse" screen of a JIRA issue, allowing to clone i
 - Create a new user script
 - Copy/paste the content of __jira-issue-clone.user.js__ into the new script
 - Modify the @include meta header to match your installation of JIRA
-- Replace [your-jira-server] with the base Url of your  installation of JIRA
 - Review and adapt the code to properly deal with your custom field configuration
 
 ## Usage/Known Issues
