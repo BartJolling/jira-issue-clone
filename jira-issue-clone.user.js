@@ -1,11 +1,12 @@
 // ==UserScript==
-// @name       JIRA Issue - Clone
-// @namespace  http://bartjolling.github.io
-// @version    2.0.2
-// @include    https://jira.*/*
-// @require    https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
-// @grant      none
-// @run-at     document-end
+// @name        JIRA Issue - Clone
+// @namespace   http://bartjolling.github.io
+// @version     2.0.3
+// @include     https://jira.*/*
+// @require     https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
+// @downloadURL https://raw.githubusercontent.com/BartJolling/jira-issue-clone/master/jira-issue-clone.user.js
+// @grant       none
+// @run-at      document-end
 // ==/UserScript==
 
 /**
@@ -23,16 +24,14 @@ scriptToInject = function ($) {
 	});
 
 	/**
-	 * Adds a 'Clone' button to the operations toolbar in JIRA
-	 * One of the parameters 'issueKey' or 'issueId' has to be set. If both are set, 'issueId' takes preference.
-	 * @param {string} issueKey - key of the issue to retrieve, e.g. PRJ-123
-	 * @param {string} issueId - id of the issue to retrieve, e.g. 12345
+	 * Adds a 'Clone' button to the operations toolbar in JIRA	 
+	 * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve 
 	 */
-	function addCloneButton(issueKey, issueId) {
+	function addCloneButton(issueIdorKey) {
 		try {
 			$opsbar = $("#opsbar-opsbar-operations");
 
-			var $clone = $('<a>').addClass('toolbar-trigger').click(function () { cloneIssue(issueKey, issueId); }).append(
+			var $clone = $('<a>').addClass('toolbar-trigger').click(function () { cloneIssue(issueIdorKey); }).append(
 				$('<span>').addClass('trigger-label').append("Clone"));
 
 			var $spinner = $('<div>').addClass('button-spinner').css({ position: 'relative', top: '15px' });
@@ -48,19 +47,13 @@ scriptToInject = function ($) {
 	/**
 	* Main function that is execute when user clicks the clone button.
 	* Drives the process of retrieving info, building a new issue and submitting it.
-	* One of the parameters 'issueKey' or 'issueId' has to be set. If both are set, 'issueId' takes preference.
-	* @param {string} issueKey - key of the issue to retrieve, e.g. PRJ-123
-	* @param {string} issueId - id of the issue to retrieve, e.g. 12345  
+  * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
 	*/
-	function cloneIssue(issueKey, issueId) {
+	function cloneIssue(issueIdorKey) {
 		try {
 			$('.button-spinner').spin();
 
-			if (!(issueId)) {
-				issueId = issueKey;
-			};
-
-			getCurrentIssueFields(issueId)
+			getCurrentIssueFields(issueIdorKey)
 				.then(function (issue) {
 					var currentFields = issue.fields;
 					var projectId = currentFields.project.id;
@@ -211,7 +204,7 @@ scriptToInject = function ($) {
 	// Add the clone button if an issue is refreshed, because a refresh will remove the clone button added by the NEW_CONTENT_ADDED event 
 	JIRA.bind(JIRA.Events.ISSUE_REFRESHED, function (context, issueId) {
 		console.log('[jira-issue-clone][ISSUE_REFRESHED]: Add Clone button for issue id: ' + issueId);
-		addCloneButton(null, issueId);
+		addCloneButton(issueId);
 	});
 
 	//Add the clone button if an issue is opened, using the pageLoad for an issue-container 
@@ -219,7 +212,7 @@ scriptToInject = function ($) {
 		if ('pageLoad' === reason && context.selector.includes('.issue-container')) {
 			var issueKey = $("meta[name='ajs-issue-key']").attr("content");
 			console.log('[jira-issue-clone][NEW_CONTENT_ADDED]: Add Clone button for issue key: ' + issueKey);
-			addCloneButton(issueKey, null);
+			addCloneButton(issueKey);
 		}
 	});
 };
