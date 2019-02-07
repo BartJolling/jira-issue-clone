@@ -6,7 +6,7 @@ Adds a "Clone"button to the "browse" screen of a JIRA issue, allowing to clone i
 - When you want to workaround the problem that the official clone function sets the wrong reporter on the cloned ticket, if you don't have the "Modify Reporter" permission: https://jira.atlassian.com/browse/JRASERVER-23538
 
 ## Installation Firefox (tested)
-[Install GreaseMonkey] (https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
+[Install GreaseMonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/)
 
 [Install jira-clone-issue](https://github.com/BartJolling/jira-issue-clone/raw/master/jira-issue-clone.user.js "Install jira-issue-clone")
 
