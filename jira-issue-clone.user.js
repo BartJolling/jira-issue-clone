@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        JIRA Issue - Clone
 // @namespace   http://bartjolling.github.io
-// @version     2.0.4
+// @version     2.0.5
 // @include     https://jira.*/*
 // @require     https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
 // @downloadURL https://raw.githubusercontent.com/BartJolling/jira-issue-clone/master/jira-issue-clone.user.js
@@ -61,8 +61,15 @@ scriptToInject = function ($) {
 
                     getIssueTypeFields(projectId, issueTypeId)
                         .then(function (meta) {
-                            var issueTypeFields = meta.projects[0].issuetypes[0].fields;
-                            createNewIssue(currentFields, issueTypeFields);
+
+                            if (meta.projects[0]) {
+                                var issueTypeFields = meta.projects[0].issuetypes[0].fields;
+                                createNewIssue(currentFields, issueTypeFields);
+                            } else {
+                                msg = 'Cannot fetch meta data for project ' + currentFields.project.key + ' and type ' + currentFields.issuetype.name;
+                                alert(msg);
+                                throw (msg);
+                            }
                         })
                         .error(handleAjaxError)
                         .always(function () {
