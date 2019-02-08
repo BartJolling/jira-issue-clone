@@ -23,10 +23,10 @@ scriptToInject = function ($) {
         }
     });
 
-	/**
-	 * Adds a 'Clone' button to the operations toolbar in JIRA	 
-	 * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve 
-	 */
+    /**
+     * Adds a 'Clone' button to the operations toolbar in JIRA 
+     * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve 
+     */
     function addCloneButton(issueIdorKey) {
         try {
             $opsbar = $("#opsbar-opsbar-operations");
@@ -44,11 +44,11 @@ scriptToInject = function ($) {
         }
     };
 
-	/**
-	* Main function that is execute when user clicks the clone button.
-	* Drives the process of retrieving info, building a new issue and submitting it.
-  * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
-	*/
+    /**
+    * Main function that is execute when user clicks the clone button.
+    * Drives the process of retrieving info, building a new issue and submitting it.
+      * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
+    */
     function cloneIssue(issueIdorKey) {
         try {
             $('.button-spinner').spin();
@@ -81,10 +81,10 @@ scriptToInject = function ($) {
         }
     };
 
-	/**
-	* Returns a promise to load the data of the current issue.
-	* @param {string} issueId - id of the issue to retrieve
-	*/
+    /**
+    * Returns a promise to load the data of the current issue.
+    * @param {string} issueId - id of the issue to retrieve
+    */
     function getCurrentIssueFields(issueId) {
         try {
             var query = API_URL + issueId;
@@ -92,15 +92,15 @@ scriptToInject = function ($) {
         }
         catch (err) {
             alert(err.message);
-            throw(err);
+            throw (err);
         }
     };
 
-	/**
-	* Returns a promise to load the fields on the create screen for a certain project and issue type.
-	* @param {string} projectId - id of the project to find the Create screen.
-	* @param {string} issueTypeId - id of the issue type to find the Create screen
-	*/
+    /**
+    * Returns a promise to load the fields on the create screen for a certain project and issue type.
+    * @param {string} projectId - id of the project to find the Create screen.
+    * @param {string} issueTypeId - id of the issue type to find the Create screen
+    */
     function getIssueTypeFields(projectId, issueTypeId) {
         try {
             var query = API_URL + "createmeta?projectIds=" + projectId + "&issuetypeIds=" + issueTypeId + "&expand=projects.issuetypes.fields";
@@ -108,15 +108,15 @@ scriptToInject = function ($) {
         }
         catch (err) {
             alert(err.message);
-            throw(err);
+            throw (err);
         }
     };
 
-	/**
-	* Builds a new issue using information of the current issue, filtered down with the fields on the create screen.
-	* @param {string} currentFields - list of fields of the current issue.
-	* @param {string} issueTypeFields - list of fields on the Create screen for this issue type
-	*/
+    /**
+    * Builds a new issue using information of the current issue, filtered down with the fields on the create screen.
+    * @param {string} currentFields - list of fields of the current issue.
+    * @param {string} issueTypeFields - list of fields on the Create screen for this issue type
+    */
     function createNewIssue(currentFields, issueTypeFields) {
 
         try {
@@ -168,9 +168,9 @@ scriptToInject = function ($) {
         }
     };
 
-	/**
-	* Manipulate values, e.g. customfield_10005 in our case is not wanted during clone so setting the value to null so that it won't be cloned
-	*/
+    /**
+    * Manipulate values, e.g. customfield_10005 in our case is not wanted during clone so setting the value to null so that it won't be cloned
+    */
     function customizeValue(key, value) {
         var result = value;
 
@@ -181,9 +181,9 @@ scriptToInject = function ($) {
         return result;
     }
 
-	/**
-	* Central error handler for ajax requests.
-	*/
+    /**
+    * Central error handler for ajax requests.
+    */
     function handleAjaxError(jqXHR, exception, errorThrown) {
 
         var msg = '';
