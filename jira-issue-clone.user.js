@@ -1,7 +1,9 @@
 // ==UserScript==
 // @name        JIRA Issue - Clone
+// @author      Bart Jolling.
+// @description Adds a client-side clone button to the Operations toolbar for JIRA issues.
 // @namespace   http://bartjolling.github.io
-// @version     2.0.5
+// @version     2.0.6
 // @include     https://jira.*/*
 // @require     https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
 // @downloadURL https://raw.githubusercontent.com/BartJolling/jira-issue-clone/master/jira-issue-clone.user.js
