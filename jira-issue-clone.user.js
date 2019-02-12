@@ -3,8 +3,8 @@
 // @author      Bart Jolling.
 // @description Adds a client-side clone button to the Operations toolbar for JIRA issues.
 // @namespace   http://bartjolling.github.io
-// @version     2.0.6
-// @include     https://jira.*/*
+// @version     2.0.7
+// @include     /^https://jira\..+?//
 // @require     https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
 // @downloadURL https://raw.githubusercontent.com/BartJolling/jira-issue-clone/master/jira-issue-clone.user.js
 // @grant       none
@@ -14,7 +14,7 @@
 /**
  * Script to be injected directly into the page
  */
-scriptToInject = function ($) {
+var scriptToInject = function ($) {
     var BROWSE_URL = window.location.protocol + '//' + window.location.hostname + '/browse/';
     var API_URL = window.location.protocol + '//' + window.location.hostname + '/rest/api/latest/issue/';
 
@@ -26,20 +26,23 @@ scriptToInject = function ($) {
     });
 
     /**
-     * Adds a 'Clone' button to the operations toolbar in JIRA 
-     * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve 
+     * Adds a 'Clone' button to the operations toolbar in JIRA
+     * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
      */
     function addCloneButton(issueIdorKey) {
         try {
-            $opsbar = $("#opsbar-opsbar-operations");
+            var $opsbar = $("#opsbar-opsbar-operations");
+            var $clone = $('#jira-issue-clone');
 
-            var $clone = $('<a>').addClass('toolbar-trigger').click(function () { cloneIssue(issueIdorKey); }).append(
-                $('<span>').addClass('trigger-label').append("Clone"));
+            if($clone.length === 0) {
+                $clone = $('<a>').addClass('toolbar-trigger').attr('id', 'jira-issue-clone').click(function () { cloneIssue(issueIdorKey); }).append(
+                    $('<span>').addClass('trigger-label').append("Clone"));
 
-            var $spinner = $('<div>').addClass('button-spinner').css({ position: 'relative', top: '15px' });
+                var $spinner = $('<div>').addClass('button-spinner').css({ position: 'relative', top: '15px' });
 
-            $opsbar.append($('<li>').addClass('toolbar-item').append($clone));
-            $opsbar.append($('<li>').addClass('toolbar-item').append($spinner));
+                $opsbar.append($('<li>').addClass('toolbar-item').append($clone));
+                $opsbar.append($('<li>').addClass('toolbar-item').append($spinner));
+            }
         }
         catch (err) {
             console.log('[jira-issue-clone][addCloneButton] ' + err.message);
@@ -68,7 +71,7 @@ scriptToInject = function ($) {
                                 var issueTypeFields = meta.projects[0].issuetypes[0].fields;
                                 createNewIssue(currentFields, issueTypeFields);
                             } else {
-                                msg = 'Cannot fetch meta data for project ' + currentFields.project.key + ' and type ' + currentFields.issuetype.name;
+                                var msg = 'Cannot fetch meta data for project ' + currentFields.project.key + ' and type ' + currentFields.issuetype.name;
                                 alert(msg);
                                 throw (msg);
                             }
@@ -145,7 +148,7 @@ scriptToInject = function ($) {
                 }
             };
 
-            //Custom fields    
+            //Custom fields
             for (var key in issueTypeFields) {
                 if (key.startsWith('customfield_') && currentFields.hasOwnProperty(key)) {
 
@@ -157,7 +160,7 @@ scriptToInject = function ($) {
                 }
             }
 
-            data = JSON.stringify(newIssue);
+            var data = JSON.stringify(newIssue);
 
             $.ajax({
                 url: API_URL,
@@ -220,13 +223,13 @@ scriptToInject = function ($) {
         throw new Error(msg + '.\n\nAn error occurred. Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information.');
     };
 
-    // Add the clone button if an issue is refreshed, because a refresh will remove the clone button added by the NEW_CONTENT_ADDED event 
+    // Add the clone button if an issue is refreshed, because a refresh will remove the clone button added by the NEW_CONTENT_ADDED event
     JIRA.bind(JIRA.Events.ISSUE_REFRESHED, function (context, issueId) {
         console.log('[jira-issue-clone][ISSUE_REFRESHED]: Add Clone button for issue id: ' + issueId);
         addCloneButton(issueId);
     });
 
-    //Add the clone button if an issue is opened, using the pageLoad for an issue-container 
+    //Add the clone button if an issue is opened, using the pageLoad for an issue-container
     JIRA.bind(JIRA.Events.NEW_CONTENT_ADDED, function (e, context, reason) {
         if ('pageLoad' === reason && context.selector.includes('.issue-container')) {
             var issueKey = $("meta[name='ajs-issue-key']").attr("content");
@@ -244,7 +247,7 @@ scriptToInject = function ($) {
     try {
         var scripts = "(" + callback.toString() + ")(window.AJS.$);";
         injectsome.content.script(scripts);
-    } catch {
+    } catch (err) {
         console.log('[jira-issue-clone] ' + err.message);
     }
 })(scriptToInject);
