@@ -3,7 +3,7 @@
 // @author      Bart Jolling.
 // @description Adds a client-side clone button to the Operations toolbar for JIRA issues.
 // @namespace   http://bartjolling.github.io
-// @version     2.0.7
+// @version     2.0.8
 // @include     /^https://jira\..+?//
 // @require     https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
 // @downloadURL https://raw.githubusercontent.com/BartJolling/jira-issue-clone/master/jira-issue-clone.user.js
@@ -50,9 +50,9 @@ var scriptToInject = function ($) {
     };
 
     /**
-    * Main function that is execute when user clicks the clone button.
+    * Main function that is executed when user clicks the clone button.
     * Drives the process of retrieving info, building a new issue and submitting it.
-      * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
+    * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
     */
     function cloneIssue(issueIdorKey) {
         try {
@@ -71,18 +71,18 @@ var scriptToInject = function ($) {
                                 var issueTypeFields = meta.projects[0].issuetypes[0].fields;
                                 createNewIssue(currentFields, issueTypeFields);
                             } else {
+                                $('.button-spinner').spinStop();
                                 var msg = 'Cannot fetch meta data for project ' + currentFields.project.key + ' and type ' + currentFields.issuetype.name;
                                 alert(msg);
-                                throw (msg);
                             }
                         })
                         .error(handleAjaxError)
-                        .always(function () {
+                        .error(function () {
                             $('.button-spinner').spinStop();
                         });
                 })
                 .error(handleAjaxError)
-                .always(function () {
+                .error(function () {
                     $('.button-spinner').spinStop();
                 });
         }
@@ -169,11 +169,15 @@ var scriptToInject = function ($) {
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (data, textStatus, jqXHR) {
-                    console.log('[jira-issue-clone][createNewIssue] ' + data);
+                    console.log('[jira-issue-clone][createNewIssue] ' + JSON.stringify(data));
 
                     window.location = BROWSE_URL + data.key;
                 }
-            }).error(handleAjaxError);
+            })
+            .error(handleAjaxError)
+            .error(function () {
+                $('.button-spinner').spinStop();
+            });
         }
         catch (err) {
             alert(err.message);
@@ -220,7 +224,7 @@ var scriptToInject = function ($) {
 
         alert(msg + '.\n\nAn error occurred. Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information.');
 
-        throw new Error(msg + '.\n\nAn error occurred. Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information.');
+        //throw new Error(msg + '.\n\nAn error occurred. Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information.');
     };
 
     // Add the clone button if an issue is refreshed, because a refresh will remove the clone button added by the NEW_CONTENT_ADDED event
