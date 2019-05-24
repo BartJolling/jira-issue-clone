@@ -3,7 +3,7 @@
 // @author      Bart Jolling.
 // @description Adds a client-side clone button to the Operations toolbar for JIRA issues.
 // @namespace   http://bartjolling.github.io
-// @version     2.0.8
+// @version     2.0.9
 // @include     /^https://jira\..+?//
 // @require     https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
 // @downloadURL https://raw.githubusercontent.com/BartJolling/jira-issue-clone/master/jira-issue-clone.user.js
@@ -30,6 +30,12 @@ var scriptToInject = function ($) {
      * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
      */
     function addCloneButton(issueIdorKey) {
+        
+        if( typeof issueIdorKey === "undefined" ) {
+          console.log('[jira-issue-clone][addCloneButton] Issue id or key required but undefined');
+          return;
+        }
+        
         try {
             var $opsbar = $("#opsbar-opsbar-operations");
             var $clone = $('#jira-issue-clone');
