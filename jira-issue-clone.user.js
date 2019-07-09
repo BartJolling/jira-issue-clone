@@ -3,7 +3,7 @@
 // @author      Bart Jolling.
 // @description Adds a client-side clone button to the Operations toolbar for JIRA issues.
 // @namespace   http://bartjolling.github.io
-// @version     2.0.9
+// @version     2.1.0
 // @include     /^https://jira\..+?//
 // @require     https://raw.githubusercontent.com/BartJolling/inject-some/master/inject-some.js
 // @downloadURL https://raw.githubusercontent.com/BartJolling/jira-issue-clone/master/jira-issue-clone.user.js
@@ -30,25 +30,37 @@ var scriptToInject = function ($) {
      * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
      */
     function addCloneButton(issueIdorKey) {
-        
-        if( typeof issueIdorKey === "undefined" ) {
-          console.log('[jira-issue-clone][addCloneButton] Issue id or key required but undefined');
-          return;
+
+        if (typeof issueIdorKey === "undefined") {
+            console.log('[jira-issue-clone][addCloneButton] Issue id or key required but undefined');
+            return;
         }
-        
+
         try {
-            var $opsbar = $("#opsbar-opsbar-operations");
+            // abort if Clone button was already added before.
             var $clone = $('#jira-issue-clone');
 
-            if($clone.length === 0) {
-                $clone = $('<a>').addClass('toolbar-trigger').attr('id', 'jira-issue-clone').click(function () { cloneIssue(issueIdorKey); }).append(
-                    $('<span>').addClass('trigger-label').append("Clone"));
-
-                var $spinner = $('<div>').addClass('button-spinner').css({ position: 'relative', top: '15px' });
-
-                $opsbar.append($('<li>').addClass('toolbar-item').append($clone));
-                $opsbar.append($('<li>').addClass('toolbar-item').append($spinner));
+            if ($clone.length > 0) {
+                return;
             }
+
+            // toolbar2 -- new style of toolbars in Jira
+            var $opsbar = $("div#opsbar-opsbar-operations");
+
+            if (1 === $opsbar.length) {
+                addCloneButtonToolbarDiv(issueIdorKey, $opsbar);
+                return;
+            }
+
+            // toolbar -- deprecated style of toolbars in Jira version 7.8 and below
+            $opsbar = $("ul#opsbar-opsbar-operations");
+
+            if (1 === $opsbar.length) {
+                addCloneButtonToolbarUl(issueIdorKey, $opsbar);
+                return;
+            }
+
+            console.log('[jira-issue-clone][addCloneButton] Could not find toolbar to the Clone button to.');
         }
         catch (err) {
             console.log('[jira-issue-clone][addCloneButton] ' + err.message);
@@ -56,13 +68,51 @@ var scriptToInject = function ($) {
     };
 
     /**
+     * Adds a 'Clone' button to the operations toolbar in JIRA - using UL
+     * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
+     * @param {Object} $opsbar - jQuery object representing the operations toolbar (<= v7.8)
+     */
+    function addCloneButtonToolbarUl(issueIdorKey, $opsbar) {
+        var showProgress = function () { $('.button-spinner').spin(); };
+        var hideProgress = function () { $('.button-spinner').spinStop(); };
+
+        var $clone = $('<a>').addClass('toolbar-trigger').attr('id', 'jira-issue-clone')
+            .click(function () { cloneIssue(issueIdorKey, showProgress, hideProgress); }).append(
+                $('<span>').addClass('trigger-label').append("Clone"));
+
+        var $spinner = $('<div>').addClass('button-spinner').css({ position: 'relative', top: '15px' });
+
+        $opsbar.append($('<li>').addClass('toolbar-item').append($clone));
+        $opsbar.append($('<li>').addClass('toolbar-item').append($spinner));
+    }
+
+    /**
+     * Adds a 'Clone' button to the operations toolbar in JIRA - using DIV
+     * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
+     * @param {Object} $opsbar - jQuery object representing the operations toolbar ( > v7.8)
+     */
+    function addCloneButtonToolbarDiv(issueIdorKey, $opsbar) {
+        var showProgress = function () { $('#jira-issue-clone')[0].busy(); };
+        var hideProgress = function () { $('#jira-issue-clone')[0].idle(); };
+
+        var $clone = $('<a>').addClass('aui-button').addClass('toolbar-trigger')
+            .attr('id', 'jira-issue-clone').attr('title', 'Clone this issue')
+            .click(function () { cloneIssue(issueIdorKey, showProgress, hideProgress); })
+            .append($('<span>').addClass('trigger-label').append("Clone"));
+
+        $opsbar.append($clone);
+    }
+
+    /**
     * Main function that is executed when user clicks the clone button.
     * Drives the process of retrieving info, building a new issue and submitting it.
     * @param {string} issueIdorKey - id (e.g. 12345) or key (e.g. PRJ-123) of the issue  or to retrieve
+    * @param {function} showProgress - callback to start showing progress on the UI
+    * @param {function} hideProgress - callback to stop showing progress on the UI
     */
-    function cloneIssue(issueIdorKey) {
+    function cloneIssue(issueIdorKey, showProgress, hideProgress) {
         try {
-            $('.button-spinner').spin();
+            showProgress();
 
             getCurrentIssueFields(issueIdorKey)
                 .then(function (issue) {
@@ -75,26 +125,26 @@ var scriptToInject = function ($) {
 
                             if (meta.projects[0]) {
                                 var issueTypeFields = meta.projects[0].issuetypes[0].fields;
-                                createNewIssue(currentFields, issueTypeFields);
+                                createNewIssue(currentFields, issueTypeFields, hideProgress);
                             } else {
-                                $('.button-spinner').spinStop();
+                                hideProgress();
                                 var msg = 'Cannot fetch meta data for project ' + currentFields.project.key + ' and type ' + currentFields.issuetype.name;
                                 alert(msg);
                             }
                         })
-                        .error(handleAjaxError)
-                        .error(function () {
-                            $('.button-spinner').spinStop();
+                        .fail(handleAjaxError)
+                        .fail(function () {
+                            hideProgress();
                         });
                 })
-                .error(handleAjaxError)
-                .error(function () {
-                    $('.button-spinner').spinStop();
+                .fail(handleAjaxError)
+                .fail(function () {
+                    hideProgress();
                 });
         }
         catch (err) {
             console.log('[jira-issue-clone][cloneIssue] ' + err.message);
-            $('.button-spinner').spinStop();
+            hideProgress();
             alert(err.message);
         }
     };
@@ -135,7 +185,7 @@ var scriptToInject = function ($) {
     * @param {string} currentFields - list of fields of the current issue.
     * @param {string} issueTypeFields - list of fields on the Create screen for this issue type
     */
-    function createNewIssue(currentFields, issueTypeFields) {
+    function createNewIssue(currentFields, issueTypeFields, hideProgress) {
 
         try {
             var newIssue = {
@@ -180,10 +230,10 @@ var scriptToInject = function ($) {
                     window.location = BROWSE_URL + data.key;
                 }
             })
-            .error(handleAjaxError)
-            .error(function () {
-                $('.button-spinner').spinStop();
-            });
+                .fail(handleAjaxError)
+                .fail(function () {
+                    hideProgress();
+                });
         }
         catch (err) {
             alert(err.message);
@@ -229,8 +279,6 @@ var scriptToInject = function ($) {
         console.log("[jira-issue-clone][handleAjaxError] jQuery XHR Exception. Status: " + jqXHR.status + ". Exception: " + exception + ". Information: " + msg + ". Error Thrown" + errorThrown);
 
         alert(msg + '.\n\nAn error occurred. Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information.');
-
-        //throw new Error(msg + '.\n\nAn error occurred. Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information.');
     };
 
     // Add the clone button if an issue is refreshed, because a refresh will remove the clone button added by the NEW_CONTENT_ADDED event
