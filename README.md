@@ -21,4 +21,8 @@ Adds a "Clone"button to the "browse" screen of a JIRA issue, allowing to clone i
 - [Install jira-clone-issue](https://github.com/BartJolling/jira-issue-clone/raw/master/jira-issue-clone.user.js "Install jira-issue-clone")
 
 ## Usage/Known Issues
-Cloning an issue can take a few seconds. During that time, a spinner will be displayed next to the clone button and you should avoid interacting with the screen. Once the cloning operation has been successful, you will be redirected to the newly cloned issue.
+- Cloning an issue can take a few seconds. During that time, a spinner will be displayed next to the clone button and you should avoid interacting with the screen. Once the cloning operation has been successful, you will be redirected to the newly cloned issue.
+- Version 2.0.9 was tested on Jira 7.8
+- Version 2.1.0 was tested on Jira 8.1.
+
+As I don't have a test environment with Jira 7.8 anymore, I can only support it on a best effort basis. I cannot guarantee that future modifications will continue to work on older versions than v8.1.
