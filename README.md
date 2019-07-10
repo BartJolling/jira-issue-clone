@@ -1,10 +1,14 @@
-# jira-issue-clone
+# jira-issue-clone v2.1
 
 ![license:mit](https://img.shields.io/github/license/BartJolling/jira-issue-clone.svg?logo=github&style=plastic&logoColor=white)
 ![github:stars](https://img.shields.io/github/stars/BartJolling/jira-issue-clone.svg?logo=github&style=plastic&logoColor=white)
 
 ## Description
-Adds a "Clone"button to the "browse" screen of a JIRA issue, allowing to clone it in the browser. It provides a workaround for two permission limitations:
+Adds a "Clone"button to the "browse" screen of a JIRA issue, allowing to clone it in the browser. This version has been fully tested on **Jira 8.1.**. 
+
+It should be backwards compatible with Jira 7.8 but this is not guaranteed. In case it doesn't work, install v2.0 of this userscript.
+
+jira-issue-clone provides a workaround for two permission limitations:
 - When you don't have the permission to clone a ticket on the JIRA server itself.
 - When you want to workaround the problem that the official clone function sets the wrong reporter on the cloned ticket, if you don't have the "Modify Reporter" permission: https://jira.atlassian.com/browse/JRASERVER-23538
 
@@ -22,7 +26,4 @@ Adds a "Clone"button to the "browse" screen of a JIRA issue, allowing to clone i
 
 ## Usage/Known Issues
 - Cloning an issue can take a few seconds. During that time, a spinner will be displayed next to the clone button and you should avoid interacting with the screen. Once the cloning operation has been successful, you will be redirected to the newly cloned issue.
-- Version 2.0.9 was tested on Jira 7.8
-- Version 2.1.0 was tested on Jira 8.1.
-
-As I don't have a test environment with Jira 7.8 anymore, I can only support it on a best effort basis. I cannot guarantee that future modifications will continue to work on older versions than v8.1.
+- As I don't have a test environment with Jira 7.8 anymore, I can only support it on a best effort basis. I cannot guarantee that future modifications will continue to work on older versions than v8.1.
