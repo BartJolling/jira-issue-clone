@@ -1,4 +1,4 @@
-# jira-issue-clone v2.1
+# jira-issue-clone v2.2
 
 ![license:mit](https://img.shields.io/github/license/BartJolling/jira-issue-clone.svg?logo=github&style=plastic&logoColor=white)
 ![github:stars](https://img.shields.io/github/stars/BartJolling/jira-issue-clone.svg?logo=github&style=plastic&logoColor=white)
